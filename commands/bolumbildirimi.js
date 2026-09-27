@@ -1,11 +1,10 @@
-const { SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 const pendingEpisodeData = require('../utils/pendingData');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('bolumbildirimi')
     .setDescription('Yeni bölüm bildirimi gönder')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addRoleOption((option) =>
       option
         .setName('rol')
@@ -26,6 +25,14 @@ module.exports = {
     ),
 
   async execute(interaction) {
+    const yetkiliRolId = process.env.YETKILI_ROL;
+    if (yetkiliRolId && !interaction.member.roles.cache.has(yetkiliRolId)) {
+      return interaction.reply({
+        content: 'Bu komutu kullanma yetkin yok.',
+        ephemeral: true,
+      });
+    }
+
     const selectedRole = interaction.options.getRole('rol');
     const cevirmen = interaction.options.getUser('cevirmen');
     const redaktor = interaction.options.getUser('redaktor');
