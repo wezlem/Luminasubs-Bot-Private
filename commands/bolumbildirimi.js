@@ -15,7 +15,31 @@ module.exports = {
       option.setName('cevirmen').setDescription('Çevirmen (opsiyonel)').setRequired(false),
     )
     .addUserOption((option) =>
+      option.setName('cevirmen2').setDescription('Çevirmen 2 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('cevirmen3').setDescription('Çevirmen 3 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('cevirmen4').setDescription('Çevirmen 4 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('cevirmen5').setDescription('Çevirmen 5 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
       option.setName('redaktor').setDescription('Redaktör (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('redaktor2').setDescription('Redaktör 2 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('redaktor3').setDescription('Redaktör 3 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('redaktor4').setDescription('Redaktör 4 (opsiyonel)').setRequired(false),
+    )
+    .addUserOption((option) =>
+      option.setName('redaktor5').setDescription('Redaktör 5 (opsiyonel)').setRequired(false),
     )
     .addUserOption((option) =>
       option.setName('encoder').setDescription('Encoder (opsiyonel)').setRequired(false),
@@ -34,16 +58,26 @@ module.exports = {
     }
 
     const selectedRole = interaction.options.getRole('rol');
-    const cevirmen = interaction.options.getUser('cevirmen');
-    const redaktor = interaction.options.getUser('redaktor');
+
+    // Çevirmen ve Redaktör için 1'den 5'e kadar olan kullanıcıları topla
+    const cevirmenler = ['cevirmen', 'cevirmen2', 'cevirmen3', 'cevirmen4', 'cevirmen5']
+      .map((name) => interaction.options.getUser(name))
+      .filter(Boolean)
+      .map((user) => user.id);
+
+    const redaktorler = ['redaktor', 'redaktor2', 'redaktor3', 'redaktor4', 'redaktor5']
+      .map((name) => interaction.options.getUser(name))
+      .filter(Boolean)
+      .map((user) => user.id);
+
     const encoder = interaction.options.getUser('encoder');
     const uploader = interaction.options.getUser('uploader');
 
     // Girilen ekip bilgilerini, bu moderatörün Discord ID'siyle eşleştirip
     // geçici olarak saklıyoruz. Modal gönderilince buradan geri okuyacağız.
     pendingEpisodeData.set(interaction.user.id, {
-      cevirmenId: cevirmen ? cevirmen.id : null,
-      redaktorId: redaktor ? redaktor.id : null,
+      cevirmenIds: cevirmenler,
+      redaktorIds: redaktorler,
       encoderId: encoder ? encoder.id : null,
       uploaderId: uploader ? uploader.id : null,
     });

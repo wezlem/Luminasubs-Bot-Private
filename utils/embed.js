@@ -8,14 +8,6 @@ const SITE_LABELS = {
   castle: 'AnimeCastle',
 };
 
-// Ekip bilgisi anahtarları ile embed'de görünecek etiketlerin eşleşmesi
-const TEAM_LABELS = {
-  cevirmenId: 'Çevirmen',
-  redaktorId: 'Redaktör',
-  encoderId: 'Encoder',
-  uploaderId: 'Uploader',
-};
-
 function formatSiteLabel(site) {
   if (SITE_LABELS[site]) return SITE_LABELS[site];
   return site.charAt(0).toUpperCase() + site.slice(1);
@@ -51,11 +43,24 @@ function buildEpisodeEmbed(animeInfo, season, episode, teamData = {}) {
     embed.addFields(fields);
   }
 
-  // Sadece doldurulan ekip bilgilerini "Çevirmen: @a & Redaktör: @b" şeklinde
-  // tek satırda, başlıksız (\u200b) bir field olarak ekle
-  const teamParts = Object.keys(TEAM_LABELS)
-    .filter((key) => teamData[key])
-    .map((key) => `${TEAM_LABELS[key]}: <@${teamData[key]}>`);
+  // Çevirmen ve Redaktör: birden fazla kişi olabilir, "," ile ayrılıp tek satırda gösterilir.
+  // Encoder ve Uploader: tek kişi.
+  const teamParts = [];
+
+  if (teamData.cevirmenIds && teamData.cevirmenIds.length > 0) {
+    const mentions = teamData.cevirmenIds.map((id) => `<@${id}>`).join(', ');
+    teamParts.push(`Çevirmen: ${mentions}`);
+  }
+  if (teamData.redaktorIds && teamData.redaktorIds.length > 0) {
+    const mentions = teamData.redaktorIds.map((id) => `<@${id}>`).join(', ');
+    teamParts.push(`Redaktör: ${mentions}`);
+  }
+  if (teamData.encoderId) {
+    teamParts.push(`Encoder: <@${teamData.encoderId}>`);
+  }
+  if (teamData.uploaderId) {
+    teamParts.push(`Uploader: <@${teamData.uploaderId}>`);
+  }
 
   if (teamParts.length > 0) {
     embed.addFields({ name: '\u200b', value: teamParts.join(' & '), inline: false });
